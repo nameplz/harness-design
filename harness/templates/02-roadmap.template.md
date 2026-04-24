@@ -1,5 +1,10 @@
 # Roadmap
 
+## Metadata
+
+- Artifact: `roadmap`
+- Source Schema: `harness.project/v1`
+
 ## Build Strategy
 
 [Explain whether the project will be built in continuous mode or sprint mode.]

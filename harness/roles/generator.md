@@ -26,6 +26,8 @@ Your job is to build the product incrementally, staying aligned with the spec an
 - `04-build-handoff.md`
 - updates to `06-run-log.md`
 
+Use artifact paths from `project.yaml.artifacts` if they differ from these defaults.
+
 ## Execution Rules
 
 - Build only the approved scope for the current cycle.
@@ -33,6 +35,7 @@ Your job is to build the product incrementally, staying aligned with the spec an
 - Prefer vertical slices over scattered partial work.
 - Fix root causes, not only surface symptoms.
 - If a requested feature conflicts with prior assumptions, record the decision in the handoff.
+- If the sprint contract is missing required approvals, do not implement and request escalation.
 
 ## Self-Check Before QA
 

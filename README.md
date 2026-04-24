@@ -1,74 +1,123 @@
 # Reusable Agent Harness Skeleton
 
-This workspace contains a reusable skeleton for long-running project harnesses inspired by the planner-generator-evaluator pattern.
+This repository is a reusable skeleton for long-running project harnesses built around the planner-generator-evaluator pattern.
 
-The goal is to let you start with a generic harness, then customize only the project-specific parts through Codex when you begin a real project.
+The current baseline is a quasi-executable v1 spec. An operator or agent should be able to read `project.yaml`, load the explicitly declared policy files and artifact paths, and run the harness without guessing.
+
+## What This Is
+
+Use this project when you want a reusable harness that can be copied into another repository and specialized there.
+
+The harness is designed to make these decisions explicit:
+
+- what the project is trying to deliver
+- what quality bar must be met
+- which approval gates are active
+- which files are the canonical run artifacts
+- when the operator should continue, retry, escalate, or stop
+- how the evaluator should execute QA and calibrate scoring
+
+## v1 Contract
+
+The v1 contract is centered on [`harness/schema/project.v1.md`](./harness/schema/project.v1.md).
+
+In v1:
+
+- `project.yaml` is the single machine-readable entry point
+- policy files are resolved from `project.yaml.policy_files`
+- canonical artifact paths are resolved from `project.yaml.artifacts`
+- approval gates use stable `gate_id` values
+- blockers use stable `blocker_id` values
+- project-specific QA checks use stable `check_id` values
+- completion is decided from explicit completion-policy fields, not prose
+- evaluator QA follows an explicit execution protocol and calibration policy
+
+If those inputs disagree, the operator should stop and write an escalation report rather than infer intent.
 
 ## Structure
 
-- `harness/project.template.yaml`: the main project configuration template
+- `harness/project.template.yaml`: starter `project.yaml` for a real project
+- `harness/schema/project.v1.md`: canonical schema and cross-file contract
 - `harness/workflow.md`: end-to-end operating model
-- `harness/automation.md`: semi-autonomous operating loop
-- `harness/policies/`: stop rules, approval gates, and execution policy
-- `harness/roles/`: role definitions for each agent
-- `harness/templates/`: reusable artifacts passed between agents
-- `harness/prompts/`: Codex-facing operating prompts
+- `harness/automation.md`: bounded automation loop
+- `harness/policies/`: execution, QA, approval-gate, and stop-condition policy templates
+- `harness/roles/`: planner, generator, and evaluator role definitions
+- `harness/templates/`: canonical artifacts written during a run
+- `harness/prompts/`: operator and bootstrap prompts
 
-## Core Ideas
+## Canonical Files
 
-- Separate planning, building, and evaluation responsibilities.
-- Use files as the source of truth between agents.
-- Prefer explicit acceptance criteria over vague notions of completion.
-- Add complexity only when the task actually needs it.
-- Revisit the harness as models improve.
+`project.yaml` should declare these file groups explicitly:
 
-## Recommended Usage
+- Policy files:
+  - execution policy
+  - QA policy
+  - approval-gates policy
+  - stop-conditions policy
+- Artifacts:
+  - `01-product-spec.md`
+  - `02-roadmap.md`
+  - `03-sprint-contract.md`
+  - `04-build-handoff.md`
+  - `05-qa-report.md`
+  - `06-run-log.md`
+  - `07-escalation-report.md`
+  - `08-final-handoff.md`
 
-1. Copy `harness/project.template.yaml` for a real project.
-2. Fill in the project brief, stack, constraints, and evaluation criteria.
-3. Update the role prompts to reflect the product domain if needed.
-4. Fill in the automation policy, approval gates, and stop conditions.
-5. Run the harness in either:
-   - `continuous` mode for stronger models and simpler projects
-   - `sprint` mode for harder or longer builds
-6. Let Codex refine the templates into a project-specific harness.
+The defaults live in [`harness/project.template.yaml`](./harness/project.template.yaml), but a real project can point to different paths as long as it does so explicitly.
 
-## Minimal Flow
+## Quickstart
 
-1. Planner expands the brief into a product spec.
-2. Generator proposes a scoped implementation contract.
-3. Evaluator approves or revises the contract.
-4. Generator implements the scoped work.
-5. Evaluator tests the result and writes a QA report.
-6. Generator fixes issues or moves to the next scope unit.
+1. Copy [`harness/project.template.yaml`](./harness/project.template.yaml) to `project.yaml` in the target project.
+2. Fill it out using the rules in [`harness/schema/project.v1.md`](./harness/schema/project.v1.md).
+3. Decide whether the project runs in `continuous` or `sprint` mode.
+4. Point `policy_files` at the active policy documents for that project.
+5. Point `artifacts` at the canonical output files for that run.
+6. Fill in quality thresholds, blocker IDs, required gates, and project-specific checks.
+7. Adapt prompts and role docs only where domain-specific guidance is actually needed.
+
+## Minimal Runtime Flow
+
+1. Read `project.yaml`.
+2. Load the policy files declared in `project.yaml.policy_files`.
+3. Resolve artifact paths from `project.yaml.artifacts`.
+4. Plan, contract, build, and evaluate according to `project.mode`.
+5. Decide pass, retry, escalate, or stop using the configured policies.
+6. Write escalation or final handoff artifacts when the run requires them.
+
+## Artifact Expectations
+
+The harness expects certain artifacts to carry machine-usable structure, not only prose.
+
+- `05-qa-report.md` should record scores, threshold results, blocker results, unverified checks, execution coverage, findings, and next action.
+- `07-escalation-report.md` should record trigger ID, phase, blocker summary, options, and requested human decision.
+- `08-final-handoff.md` should record outcome, completion-policy results, delivered artifacts, deferred work, and operational notes.
 
 ## When To Use More Structure
 
-Use sprinted contracts, explicit handoffs, and stricter QA thresholds when:
+Prefer `sprint` mode when:
 
-- the app is large or multi-surface
-- correctness matters more than raw speed
-- the model drifts during long tasks
-- the project has many moving parts or hidden dependencies
+- the project is long-running
+- the work is risky or multi-surface
+- the model tends to drift over longer sessions
+- you need explicit scope negotiation between build and QA
 
-Use a simpler continuous flow when:
+Prefer `continuous` mode when:
 
 - the project is small
-- the model can stay coherent without decomposition
-- QA is still valuable but per-sprint negotiation is unnecessary
+- the task is tightly coupled
+- the model can stay coherent end to end
+- per-sprint contracting would add more overhead than value
 
-## Semi-Autonomous Operation
+## Design Principles
 
-This skeleton now supports policy-based automation for:
+- Separate planning, building, and evaluation responsibilities.
+- Use files as the durable coordination layer.
+- Prefer explicit acceptance criteria over vague completion language.
+- Keep bounded autonomy intact.
+- Add structure only when it improves reliability.
+- Make evaluator judgment repeatable through explicit QA protocol and calibration rules.
 
-- planning
-- implementation loops
-- QA loops
-- escalation and stop conditions
-- approval checkpoints
+## Current Status
 
-The intended model is:
-
-- Codex runs autonomously inside a bounded policy
-- the harness decides when to continue, retry, escalate, or stop
-- a human approves only the high-consequence checkpoints
+This repository now defines the contract for a reusable harness skeleton, not a fully automated runner. It is intended to be read by scripts or agents as a quasi-executable spec and then specialized per project.

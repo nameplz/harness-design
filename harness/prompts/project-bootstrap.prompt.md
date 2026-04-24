@@ -9,6 +9,7 @@ Read the generic harness templates and transform them into a project-specific ha
 ## Required Work
 
 - Fill in `project.yaml` from the project brief.
+- Keep `project.yaml` valid against `harness/schema/project.v1.md`.
 - Adapt the quality bar to the project.
 - Adapt approval gates and stop conditions to the project's risk profile.
 - Add project-specific QA checks.
@@ -25,3 +26,4 @@ The resulting harness should be detailed enough that Codex can run planning, imp
 - Require human approval for high-consequence actions.
 - Prefer explicit criteria over subjective completion language.
 - Keep files readable and editable by humans.
+- Do not introduce implicit paths or policy discovery; record them explicitly in `project.yaml`.

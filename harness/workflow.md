@@ -14,6 +14,8 @@ Every run starts with:
 
 These inputs are normalized into `project.yaml` and then used by all agents.
 
+`project.yaml` is the single machine-readable entry point for the run. The operator should not infer active policies, artifact paths, or approval gates from directory contents.
+
 ## 2. Agent Roles
 
 - Planner: converts a brief into a product spec and staged roadmap
@@ -59,6 +61,8 @@ Required artifacts:
 - `04-build-handoff.md`
 - `05-qa-report.md`
 - `06-run-log.md`
+- `07-escalation-report.md`
+- `08-final-handoff.md`
 
 Benefits:
 
@@ -71,9 +75,10 @@ Benefits:
 
 The evaluator should gate progress at three levels:
 
-1. Spec gate: is the plan aligned with the brief?
-2. Contract gate: is the proposed scope concrete and testable?
-3. QA gate: does the implementation meet the thresholds?
+1. `spec_gate`: is the plan aligned with the brief?
+2. `scope_change_gate`: has scope or architecture moved outside the approved envelope?
+3. QA decision: does the implementation meet the thresholds?
+4. `release_gate`: can the result be handed off or released safely?
 
 If a gate fails, the evaluator must explain:
 
@@ -115,7 +120,23 @@ The evaluator should test:
 
 The evaluator must be skeptical by design.
 
-## 8. Simplification Rule
+That skepticism should be operationalized through two separate mechanisms:
+
+- an execution protocol that defines the minimum QA sequence for each round
+- calibration rules that prevent generous scoring, silent assumptions, and score drift across rounds
+
+## 8. File Contract
+
+The harness should treat the following as stable machine-readable contracts:
+
+- gate IDs come from the approval gates policy
+- blocker IDs come from `project.yaml`
+- artifact paths come from `project.yaml`
+- completion checks come from `project.yaml` and the execution policy
+
+If any of these disagree, the run should stop and write an escalation report instead of guessing.
+
+## 9. Simplification Rule
 
 Every harness component should justify its existence.
 

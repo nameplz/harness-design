@@ -1,16 +1,25 @@
 # Escalation Report
 
+## Metadata
+
+- Artifact: `escalation_report`
+- Source Schema: `harness.project/v1`
+
 ## Trigger
 
-[What condition caused escalation?]
+- Trigger ID: [stop_id or escalation trigger]
+- Current Phase: [planning / contract / build / qa / handoff]
+- Trigger Summary: [What condition caused escalation?]
 
 ## Current State
 
-[What has been completed so far?]
+- Completed Work: [What has been completed so far?]
+- Remaining Work: [What remains unresolved?]
 
 ## Blocker
 
-[Why the harness cannot safely continue on its own.]
+- Blocking Reason: [Why the harness cannot safely continue on its own.]
+- Impact: [Why this matters now.]
 
 ## Options
 

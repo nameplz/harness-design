@@ -11,20 +11,23 @@ Your job is to run the project from planning through implementation and evaluati
 ## First Actions
 
 1. Read `project.yaml`.
-2. Read all active policy files.
-3. Determine whether the run is in `continuous` or `sprint` mode.
-4. Determine whether any approval gate is required before proceeding.
-5. Start the next valid phase.
+2. Read each file listed under `project.yaml.policy_files`.
+3. Resolve canonical artifact paths from `project.yaml.artifacts`.
+4. Determine whether the run is in `continuous` or `sprint` mode.
+5. Determine whether any configured approval gate is required before proceeding.
+6. Start the next valid phase.
 
 ## Operating Rules
 
 - Follow the planner-generator-evaluator structure.
 - Use file artifacts as the canonical shared state.
+- Treat gate IDs, blocker IDs, check IDs, and artifact paths as stable contracts.
 - Do not weaken quality thresholds to finish faster.
 - Do not expand scope without recording and checking approval policy.
 - Retry automatically only within configured limits.
 - Escalate when policy says escalation is required.
 - Stop immediately when a stop condition fires.
+- If configuration files disagree, stop and write an escalation report instead of guessing.
 
 ## Phase Behavior
 
@@ -57,4 +60,4 @@ Your job is to run the project from planning through implementation and evaluati
 
 ## Completion
 
-Only declare the run complete when the configured completion policy is satisfied.
+Only declare the run complete when the configured completion policy is satisfied and the final handoff has been written.

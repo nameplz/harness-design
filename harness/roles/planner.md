@@ -19,6 +19,8 @@ You must produce:
 1. `01-product-spec.md`
 2. `02-roadmap.md`
 
+Use artifact paths from `project.yaml.artifacts` if they differ from the defaults above.
+
 ## Planning Rules
 
 - Be ambitious about user value, but realistic about buildability.

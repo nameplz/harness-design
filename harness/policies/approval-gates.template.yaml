@@ -1,5 +1,5 @@
 approval_gates:
-  - name: "spec_gate"
+  - gate_id: "spec_gate"
     required: false
     trigger:
       - "after initial planning"
@@ -9,7 +9,7 @@ approval_gates:
       - "revise"
       - "reduce scope"
 
-  - name: "scope_change_gate"
+  - gate_id: "scope_change_gate"
     required: true
     trigger:
       - "major scope increase"
@@ -21,7 +21,7 @@ approval_gates:
       - "reject"
       - "request alternative"
 
-  - name: "release_gate"
+  - gate_id: "release_gate"
     required: true
     trigger:
       - "before production deployment"

@@ -1,5 +1,11 @@
 # Sprint Contract
 
+## Metadata
+
+- Artifact: `sprint_contract`
+- Source Schema: `harness.project/v1`
+- Gate Status: [approved / needs_revision / blocked]
+
 ## Sprint Name
 
 [Short sprint label]
@@ -39,5 +45,6 @@
 
 ## Approval
 
-- Generator: [approved / needs revision]
-- Evaluator: [approved / needs revision]
+- Generator: [approved / needs_revision]
+- Evaluator: [approved / needs_revision]
+- Required Human Gate: [none / scope_change_gate / other gate_id]

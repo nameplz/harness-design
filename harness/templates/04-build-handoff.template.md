@@ -1,5 +1,11 @@
 # Build Handoff
 
+## Metadata
+
+- Artifact: `build_handoff`
+- Source Schema: `harness.project/v1`
+- Cycle: [number]
+
 ## Cycle Summary
 
 [What was implemented in this cycle?]

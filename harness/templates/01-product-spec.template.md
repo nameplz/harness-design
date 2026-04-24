@@ -1,5 +1,10 @@
 # Product Spec
 
+## Metadata
+
+- Artifact: `product_spec`
+- Source Schema: `harness.project/v1`
+
 ## Summary
 
 [Explain what is being built and why.]

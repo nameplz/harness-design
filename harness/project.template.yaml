@@ -1,11 +1,14 @@
-project_name: "Replace with project name"
-project_type: "web-app"
-mode: "sprint"
+schema_version: "harness.project/v1"
 
-brief: |
-  Replace this with a short project brief in 1-4 sentences.
+project:
+  id: "replace-with-project-slug"
+  name: "Replace with project name"
+  type: "web-app"
+  mode: "sprint"
 
-success_definition:
+brief:
+  summary: |
+    Replace this with a short project brief in 1-4 sentences.
   primary_outcome: "What must exist by the end of the run?"
   user_value: "Why does this project matter to the user?"
   non_goals:
@@ -24,10 +27,10 @@ delivery:
     frontend: "React/Vite or project-specific choice"
     backend: "FastAPI/Node/Rails or project-specific choice"
     database: "SQLite/PostgreSQL or project-specific choice"
-  target_environment:
+  target_environments:
     - "local"
     - "staging"
-  expected_artifacts:
+  expected_deliverables:
     - "working application"
     - "readme"
     - "seed data if needed"
@@ -55,15 +58,17 @@ quality_bar:
     code_quality: 7
     reliability: 7
   blocking_rules:
-    - "Any broken primary user flow is an automatic fail"
-    - "Any data corruption or persistence bug is an automatic fail"
+    - blocker_id: "primary_flow_broken"
+      description: "Any broken primary user flow is an automatic fail."
+    - blocker_id: "data_corruption_or_persistence_bug"
+      description: "Any data corruption or persistence bug is an automatic fail."
 
 workflow:
-  use_planner: true
-  use_generator: true
-  use_evaluator: true
-  use_sprint_contracts: true
-  use_context_resets: false
+  planner_enabled: true
+  generator_enabled: true
+  evaluator_enabled: true
+  sprint_contracts_enabled: true
+  context_resets_enabled: false
   qa_round_limit: 3
   handoff_required: true
   auto_retry_failed_rounds: true
@@ -78,41 +83,45 @@ references:
 
 project_specific_checks:
   must_test:
-    - "Primary user journey"
-    - "Persistence behavior"
+    - check_id: "primary_user_journey"
+      description: "Primary user journey"
+    - check_id: "persistence_behavior"
+      description: "Persistence behavior"
   nice_to_test:
-    - "Responsiveness"
-    - "empty states"
+    - check_id: "responsive_layout"
+      description: "Responsiveness"
+    - check_id: "empty_states"
+      description: "Empty states"
 
 ai_features:
   desired: false
   notes:
     - "If true, explain what agent or AI behavior should exist in-product"
 
-automation:
-  autonomy_level: "bounded-auto"
-  can_plan_without_approval: true
-  can_implement_without_approval: true
-  can_run_tests_without_approval: true
-  can_modify_existing_code_without_approval: true
-  requires_approval_for:
-    - "major scope changes"
-    - "production deployment"
-    - "destructive data migrations"
-    - "external paid service activation"
-  stop_conditions:
-    - "budget exceeded"
-    - "time exceeded"
-    - "same failure repeated 3 times"
-    - "critical security or data-loss issue discovered"
-  escalation_conditions:
-    - "requirements conflict"
-    - "evaluation remains inconclusive"
-    - "blocked by missing credentials or infrastructure"
-  approval_gates:
-    - "post-spec approval"
-    - "pre-deploy approval"
-  completion_policy:
-    require_all_thresholds: true
-    require_core_flows_passing: true
-    require_known_critical_bugs_resolved: true
+policy_files:
+  execution: "harness/policies/execution-policy.yaml"
+  qa: "harness/policies/qa-policy.yaml"
+  approval_gates: "harness/policies/approval-gates.yaml"
+  stop_conditions: "harness/policies/stop-conditions.yaml"
+
+approval:
+  required_gates:
+    - "spec_gate"
+    - "release_gate"
+
+artifacts:
+  product_spec: "01-product-spec.md"
+  roadmap: "02-roadmap.md"
+  sprint_contract: "03-sprint-contract.md"
+  build_handoff: "04-build-handoff.md"
+  qa_report: "05-qa-report.md"
+  run_log: "06-run-log.md"
+  escalation_report: "07-escalation-report.md"
+  final_handoff: "08-final-handoff.md"
+
+completion_policy:
+  require_all_thresholds: true
+  require_core_flows_passing: true
+  require_known_critical_bugs_resolved: true
+  require_all_required_deliverables: true
+  require_handoff_written: true

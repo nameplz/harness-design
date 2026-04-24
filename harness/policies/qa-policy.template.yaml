@@ -5,9 +5,49 @@ qa_policy:
     - "edge cases"
     - "state persistence"
     - "spec alignment"
+  execution_protocol:
+    required_sequence:
+      - "Read the active sprint contract, product spec, and latest build handoff before testing."
+      - "Execute the primary user journey before exploring secondary flows."
+      - "Test at least one important failure or edge path for each in-scope flow."
+      - "Check persistence or state transitions when the product stores or mutates data."
+      - "Re-test previous defect areas after fixes before declaring progress."
+      - "Mark required checks as verified or unverified instead of guessing."
+    tool_guidance:
+      - "Use the most direct verification method available for the product surface."
+      - "For browser applications, browser automation or direct interactive inspection is preferred."
+      - "For APIs or services, direct requests and state validation are preferred."
+      - "Specific tools are implementation choices, not schema requirements."
+    pass_fail_checkpoints:
+      - "Confirm blocker status before assigning a passing verdict."
+      - "Confirm threshold status for each scoring criterion."
+      - "Do not pass work with unverified required checks unless policy explicitly allows it."
   scoring:
     use_weighted_thresholds: true
     fail_if_any_blocking_rule_hits: true
+    require_weighted_score_output: true
+    require_threshold_result_by_criterion: true
+    require_blocker_result_by_id: true
+  calibration:
+    stance:
+      - "Default to skeptical review rather than benefit-of-the-doubt scoring."
+      - "Do not let generally polished output outweigh broken or unverified behavior."
+    score_discipline:
+      - "A blocker trigger forces an overall fail verdict."
+      - "Any criterion below threshold forces an overall fail verdict."
+      - "Unverified required checks must remain unverified, not implicitly passed."
+      - "Score increases across rounds should reflect verified improvements, not optimism."
+    drift_controls:
+      - "Do not lower severity for a repeated unresolved issue."
+      - "Do not materially raise scores for an area that was not re-tested."
+      - "If a score changes meaningfully, the report should make the reason observable."
+    severity_boundaries:
+      high:
+        rule: "Use for broken core flows, security issues, data risk, release blockers, or failures that invalidate sprint acceptance."
+      medium:
+        rule: "Use for important but non-blocking product, UX, or implementation issues that should be fixed before broader expansion."
+      low:
+        rule: "Use for polish, clarity, or minor quality issues that do not block current sprint acceptance on their own."
   defect_severity:
     high:
       description: "core flow broken, security issue, data risk, or release blocker"
@@ -19,12 +59,16 @@ qa_policy:
     - "Test past the happy path"
     - "Re-test previous defect areas after fixes"
     - "Do not mark pass if major criteria are unverified"
+    - "Record any unverified required checks explicitly"
+    - "Do not convert missing evidence into positive assumptions"
   verdict_logic:
     pass_when:
       - "all blocking rules pass"
       - "thresholds pass"
       - "core journey works"
+      - "required checks are verified unless policy explicitly allows otherwise"
     fail_when:
       - "any blocker exists"
       - "thresholds missed"
       - "spec-critical feature missing"
+      - "required checks remain materially unverified"

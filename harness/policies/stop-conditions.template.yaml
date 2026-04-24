@@ -1,0 +1,33 @@
+stop_conditions:
+  immediate:
+    - stop_id: "critical_security_issue"
+      description: "A critical security issue is discovered."
+    - stop_id: "destructive_data_loss_risk"
+      description: "A destructive migration or data-loss risk is detected."
+    - stop_id: "irreconcilable_requirements"
+      description: "Requirements are contradictory enough that implementation would be wasteful."
+    - stop_id: "missing_required_infrastructure"
+      description: "The environment is missing required credentials or infrastructure and no safe fallback exists."
+
+  bounded:
+    - stop_id: "hard_budget_reached"
+      description: "Hard budget has been reached."
+    - stop_id: "max_runtime_reached"
+      description: "Maximum allowed run time has been reached."
+    - stop_id: "max_loop_count_reached"
+      description: "Maximum loop count has been reached."
+    - stop_id: "same_failure_limit_reached"
+      description: "The same failure pattern has repeated the configured number of times."
+    - stop_id: "qa_not_converging"
+      description: "QA findings are not converging."
+    - stop_id: "root_cause_not_addressed"
+      description: "The generator keeps solving symptoms without fixing root causes."
+
+on_stop:
+  required_report: "07-escalation-report.md"
+  required_fields:
+    - "trigger_id"
+    - "current_phase"
+    - "completed_work"
+    - "blocking_reason"
+    - "recommended_next_human_decision"

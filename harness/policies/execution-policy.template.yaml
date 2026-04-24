@@ -38,6 +38,10 @@ escalation:
     - "qa disagreement persists"
   action: "pause_and_request_human_decision"
 
+artifact_requirements:
+  escalation_report: "07-escalation-report.md"
+  final_handoff: "08-final-handoff.md"
+
 retry_policy:
   auto_retry_enabled: true
   only_if:
@@ -50,4 +54,5 @@ completion:
   require_pass_verdict: true
   require_core_flow_success: true
   require_blockers_resolved: true
+  require_all_required_deliverables: true
   require_handoff_written: true
