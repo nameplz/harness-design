@@ -1,0 +1,118 @@
+project_name: "Replace with project name"
+project_type: "web-app"
+mode: "sprint"
+
+brief: |
+  Replace this with a short project brief in 1-4 sentences.
+
+success_definition:
+  primary_outcome: "What must exist by the end of the run?"
+  user_value: "Why does this project matter to the user?"
+  non_goals:
+    - "What should the harness avoid building?"
+
+product_context:
+  target_users:
+    - "Who is this for?"
+  core_jobs:
+    - "What jobs should the product help users complete?"
+  domain_notes:
+    - "Important domain assumptions or terminology"
+
+delivery:
+  preferred_stack:
+    frontend: "React/Vite or project-specific choice"
+    backend: "FastAPI/Node/Rails or project-specific choice"
+    database: "SQLite/PostgreSQL or project-specific choice"
+  target_environment:
+    - "local"
+    - "staging"
+  expected_artifacts:
+    - "working application"
+    - "readme"
+    - "seed data if needed"
+
+constraints:
+  time_budget_hours: 4
+  budget_priority: "medium"
+  internet_policy: "restricted"
+  must_use:
+    - "List required tools, APIs, frameworks, or patterns"
+  avoid:
+    - "List anti-patterns, forbidden dependencies, or architecture constraints"
+
+quality_bar:
+  weighted_criteria:
+    product_depth: 0.25
+    functionality: 0.30
+    design_quality: 0.15
+    code_quality: 0.20
+    reliability: 0.10
+  pass_thresholds:
+    product_depth: 7
+    functionality: 8
+    design_quality: 6
+    code_quality: 7
+    reliability: 7
+  blocking_rules:
+    - "Any broken primary user flow is an automatic fail"
+    - "Any data corruption or persistence bug is an automatic fail"
+
+workflow:
+  use_planner: true
+  use_generator: true
+  use_evaluator: true
+  use_sprint_contracts: true
+  use_context_resets: false
+  qa_round_limit: 3
+  handoff_required: true
+  auto_retry_failed_rounds: true
+  max_build_rounds: 5
+
+references:
+  examples:
+    - title: "Reference app or aesthetic"
+      notes: "What should be borrowed or avoided?"
+  source_material:
+    - "Specs, docs, screenshots, or repo paths"
+
+project_specific_checks:
+  must_test:
+    - "Primary user journey"
+    - "Persistence behavior"
+  nice_to_test:
+    - "Responsiveness"
+    - "empty states"
+
+ai_features:
+  desired: false
+  notes:
+    - "If true, explain what agent or AI behavior should exist in-product"
+
+automation:
+  autonomy_level: "bounded-auto"
+  can_plan_without_approval: true
+  can_implement_without_approval: true
+  can_run_tests_without_approval: true
+  can_modify_existing_code_without_approval: true
+  requires_approval_for:
+    - "major scope changes"
+    - "production deployment"
+    - "destructive data migrations"
+    - "external paid service activation"
+  stop_conditions:
+    - "budget exceeded"
+    - "time exceeded"
+    - "same failure repeated 3 times"
+    - "critical security or data-loss issue discovered"
+  escalation_conditions:
+    - "requirements conflict"
+    - "evaluation remains inconclusive"
+    - "blocked by missing credentials or infrastructure"
+  approval_gates:
+    - "post-spec approval"
+    - "pre-deploy approval"
+  completion_policy:
+    require_all_thresholds: true
+    require_core_flows_passing: true
+    require_known_critical_bugs_resolved: true

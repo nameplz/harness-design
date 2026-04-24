@@ -1,0 +1,53 @@
+autonomy:
+  mode: "bounded-auto"
+  allowed_actions:
+    - "create and edit project files"
+    - "run local tests"
+    - "refactor within agreed scope"
+    - "retry failed implementations within limits"
+  disallowed_actions:
+    - "deploy to production"
+    - "delete user data"
+    - "change billing configuration"
+    - "weaken acceptance criteria without approval"
+
+loop_limits:
+  max_total_rounds: 8
+  max_failed_rounds_per_scope: 3
+  max_same_failure_repeats: 3
+  max_hours: 4
+  soft_budget_usd: 50
+  hard_budget_usd: 100
+
+stop_conditions:
+  immediate:
+    - "critical security flaw"
+    - "possible destructive data loss"
+    - "irreconcilable requirement conflict"
+  bounded:
+    - "hard budget reached"
+    - "max hours reached"
+    - "max same-failure repeats reached"
+
+escalation:
+  trigger_on:
+    - "missing credentials"
+    - "missing external service configuration"
+    - "unclear acceptance criteria"
+    - "spec drift"
+    - "qa disagreement persists"
+  action: "pause_and_request_human_decision"
+
+retry_policy:
+  auto_retry_enabled: true
+  only_if:
+    - "failure has concrete repro"
+    - "fix scope is bounded"
+    - "no stop condition has fired"
+  require_root_cause_note: true
+
+completion:
+  require_pass_verdict: true
+  require_core_flow_success: true
+  require_blockers_resolved: true
+  require_handoff_written: true

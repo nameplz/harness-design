@@ -1,0 +1,30 @@
+qa_policy:
+  philosophy: "skeptical"
+  primary_focus:
+    - "core user flows"
+    - "edge cases"
+    - "state persistence"
+    - "spec alignment"
+  scoring:
+    use_weighted_thresholds: true
+    fail_if_any_blocking_rule_hits: true
+  defect_severity:
+    high:
+      description: "core flow broken, security issue, data risk, or release blocker"
+    medium:
+      description: "important but non-blocking functional or UX issue"
+    low:
+      description: "polish, clarity, or minor quality issue"
+  qa_depth_rules:
+    - "Test past the happy path"
+    - "Re-test previous defect areas after fixes"
+    - "Do not mark pass if major criteria are unverified"
+  verdict_logic:
+    pass_when:
+      - "all blocking rules pass"
+      - "thresholds pass"
+      - "core journey works"
+    fail_when:
+      - "any blocker exists"
+      - "thresholds missed"
+      - "spec-critical feature missing"

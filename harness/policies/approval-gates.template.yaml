@@ -1,0 +1,33 @@
+approval_gates:
+  - name: "spec_gate"
+    required: false
+    trigger:
+      - "after initial planning"
+    approver: "human"
+    decision_options:
+      - "approve"
+      - "revise"
+      - "reduce scope"
+
+  - name: "scope_change_gate"
+    required: true
+    trigger:
+      - "major scope increase"
+      - "major architecture change"
+      - "timeline or budget expansion"
+    approver: "human"
+    decision_options:
+      - "approve"
+      - "reject"
+      - "request alternative"
+
+  - name: "release_gate"
+    required: true
+    trigger:
+      - "before production deployment"
+      - "before final delivery for high-risk projects"
+    approver: "human"
+    decision_options:
+      - "approve"
+      - "hold"
+      - "require fixes"
