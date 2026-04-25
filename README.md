@@ -1,4 +1,6 @@
-# Reusable Agent Harness Skeleton
+# Reusable Multi-CLI Agent Harness Skeleton
+
+Korean version: [`README.ko.md`](./README.ko.md)
 
 This repository is a reusable skeleton for long-running project harnesses built around the planner-generator-evaluator pattern.
 
@@ -7,6 +9,7 @@ The current baseline is a quasi-executable v1 spec. An operator or agent should 
 ## What This Is
 
 Use this project when you want a reusable harness that can be copied into another repository and specialized there.
+The core contract is vendor-neutral and can be adapted to Codex, Claude Code, Gemini CLI, or other agentic CLIs without changing the underlying project artifacts.
 
 The harness is designed to make these decisions explicit:
 
@@ -24,6 +27,7 @@ The v1 contract is centered on [`harness/schema/project.v1.md`](./harness/schema
 In v1:
 
 - `project.yaml` is the single machine-readable entry point
+- `project.yaml.runtime` may declare the active CLI adapter without changing the core contract
 - policy files are resolved from `project.yaml.policy_files`
 - canonical artifact paths are resolved from `project.yaml.artifacts`
 - approval gates use stable `gate_id` values
@@ -43,7 +47,50 @@ If those inputs disagree, the operator should stop and write an escalation repor
 - `harness/policies/`: execution, QA, approval-gate, and stop-condition policy templates
 - `harness/roles/`: planner, generator, and evaluator role definitions
 - `harness/templates/`: canonical artifacts written during a run
-- `harness/prompts/`: operator and bootstrap prompts
+- `harness/prompts/`: shared bootstrap and compatibility prompts
+- `harness/adapters/`: CLI-specific operator prompts, capability declarations, and bootstrap notes
+
+In this skeleton repository, the default policy files are the checked-in `*.template.yaml` files under `harness/policies/`.
+Those defaults are intentionally explicit so a fresh clone can be read without inferring alternate file names.
+
+Supported adapter targets in this repository:
+
+- Codex
+- Claude Code
+- Gemini CLI
+
+## Platform Guide
+
+Use the same core harness files for every CLI and switch behavior through `project.yaml.runtime`.
+
+### Codex
+
+Recommended when you want the strongest fit with the current repository defaults.
+
+- Set `runtime.platform` to `codex`
+- Set `runtime.adapter_path` to `harness/adapters/codex`
+- Prefer this when you want native multi-agent execution, explicit approval handling, and structured editing workflows
+- Keep shared planner, generator, and evaluator prompts in `harness/roles/` unless the project needs Codex-specific overrides
+
+### Claude Code
+
+Recommended when you want the same artifact-driven workflow but with Claude Code as the top-level operator.
+
+- Set `runtime.platform` to `claude-code`
+- Set `runtime.adapter_path` to `harness/adapters/claude-code`
+- Prefer this when you want delegated execution but still want approvals, QA gates, and handoff artifacts to remain explicit
+- Keep Claude-specific orchestration notes in the adapter files instead of copying them into the shared core prompts
+
+### Gemini CLI
+
+Recommended when you want the same harness contract in a simpler runtime that may rely on sequential execution.
+
+- Set `runtime.platform` to `gemini-cli`
+- Set `runtime.adapter_path` to `harness/adapters/gemini-cli`
+- Prefer this when you want to preserve the planner-generator-evaluator workflow even if subagents, browser automation, or structured patch tooling are limited
+- Assume sequential role execution by default and keep the same artifact, approval, and QA expectations
+
+In all three cases, `project.yaml`, policy files, and artifact paths remain the source of truth. The adapter only changes how the CLI carries out the run, not what the run must produce.
 
 ## Canonical Files
 
@@ -69,21 +116,54 @@ The defaults live in [`harness/project.template.yaml`](./harness/project.templat
 ## Quickstart
 
 1. Copy [`harness/project.template.yaml`](./harness/project.template.yaml) to `project.yaml` in the target project.
-2. Fill it out using the rules in [`harness/schema/project.v1.md`](./harness/schema/project.v1.md).
-3. Decide whether the project runs in `continuous` or `sprint` mode.
-4. Point `policy_files` at the active policy documents for that project.
-5. Point `artifacts` at the canonical output files for that run.
-6. Fill in quality thresholds, blocker IDs, required gates, and project-specific checks.
-7. Adapt prompts and role docs only where domain-specific guidance is actually needed.
+2. Treat the default `policy_files` values as valid starter paths for this skeleton. They point at the existing `harness/policies/*.template.yaml` files.
+3. Set `runtime.platform` and `runtime.adapter_path` to the active CLI target.
+4. Fill out `project.yaml` using the rules in [`harness/schema/project.v1.md`](./harness/schema/project.v1.md).
+5. Decide whether the project runs in `continuous` or `sprint` mode.
+6. Point `artifacts` at the canonical output files for that run.
+7. Fill in quality thresholds, blocker IDs, required gates, and project-specific checks.
+8. If you want project-specific policy file names, copy the template policy files to new paths and then update `project.yaml.policy_files` to match those paths exactly.
+9. Override prompts or capabilities only when the adapter default is not sufficient.
+
+The runtime contract stays the same in both cases: operators should read only the file paths declared in `project.yaml` and should not guess fallback names such as non-template variants.
+
+## Runtime CLI
+
+This repository includes a small helper CLI for setting the `runtime` block without manually editing YAML.
+
+Use the local wrapper:
+
+```bash
+./bin/harness runtime set <platform>
+```
+
+Examples:
+
+```bash
+./bin/harness runtime set codex
+./bin/harness runtime set claude-code --project ./project.yaml
+./bin/harness runtime set gemini-cli --set-capability browser_automation=false
+./bin/harness runtime set codex --check
+./bin/harness runtime set codex --print
+```
+
+Notes:
+
+- The executable is `./bin/harness` because this repository already uses `harness/` as a directory name.
+- If `project.yaml` is missing, the command can create it from `harness/project.template.yaml`.
+- The command only updates `runtime`; it does not rewrite `policy_files`, `artifacts`, or other project settings.
+- Adapter defaults come from `harness/adapters/*/capabilities.yaml`.
+- Relative runtime paths are resolved from the directory that contains `project.yaml`, so the project should include the `harness/` directory alongside that file.
 
 ## Minimal Runtime Flow
 
 1. Read `project.yaml`.
-2. Load the policy files declared in `project.yaml.policy_files`.
-3. Resolve artifact paths from `project.yaml.artifacts`.
-4. Plan, contract, build, and evaluate according to `project.mode`.
-5. Decide pass, retry, escalate, or stop using the configured policies.
-6. Write escalation or final handoff artifacts when the run requires them.
+2. Resolve the active adapter from `project.yaml.runtime`.
+3. Load the policy files declared in `project.yaml.policy_files`.
+4. Resolve artifact paths from `project.yaml.artifacts`.
+5. Plan, contract, build, and evaluate according to `project.mode`.
+6. Decide pass, retry, escalate, or stop using the configured policies.
+7. Write escalation or final handoff artifacts when the run requires them.
 
 ## Artifact Expectations
 
@@ -113,6 +193,7 @@ Prefer `continuous` mode when:
 
 - Separate planning, building, and evaluation responsibilities.
 - Use files as the durable coordination layer.
+- Keep the core contract independent from any single CLI.
 - Prefer explicit acceptance criteria over vague completion language.
 - Keep bounded autonomy intact.
 - Add structure only when it improves reliability.

@@ -1,0 +1,11 @@
+platform: "gemini-cli"
+execution_mode: "single-agent-sequenced"
+capabilities:
+  subagents: false
+  interactive_approval: true
+  browser_automation: false
+  structured_patch: false
+  web_access: true
+prompt_files:
+  operator: "operator.prompt.md"
+bootstrap_notes: "bootstrap-notes.md"

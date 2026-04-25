@@ -23,6 +23,18 @@ This schema defines the machine-readable contract for a project-specific harness
 - `type`: product category such as `web-app`, `library`, `cli`, `service`
 - `mode`: `continuous` or `sprint`
 
+### `runtime`
+
+Optional runtime metadata for selecting a CLI adapter without changing the core harness contract.
+
+- `platform`: `codex`, `claude-code`, or `gemini-cli`
+- `adapter_path`: explicit path to the active adapter directory
+- `execution_mode`: `native-multi-agent` or `single-agent-sequenced`
+- `capabilities`: optional runtime overrides
+- `prompt_overrides`: optional prompt path overrides
+
+If `runtime` is present, `platform` and `adapter_path` should both be present.
+
 ### `brief`
 
 - `summary`: short project brief
@@ -97,6 +109,8 @@ Explicit paths to the active policy files. The operator should not infer these.
 - `approval_gates`
 - `stop_conditions`
 
+Each configured path must exist at execution time. It is valid to point at checked-in template policy files or at copied project-specific policy files, but the runtime should use only the paths declared in `project.yaml`.
+
 ### `approval`
 
 - `required_gates`: list of gate IDs enabled for this project
@@ -123,6 +137,31 @@ Explicit paths to canonical run artifacts.
 - `require_known_critical_bugs_resolved`
 - `require_all_required_deliverables`
 - `require_handoff_written`
+
+## Runtime Contract
+
+The harness core stays vendor-neutral. CLI-specific behavior should be attached through adapter files rather than baked into the core policy or artifact contract.
+
+### `runtime.capabilities`
+
+Use this only for project-specific overrides. Adapter defaults should live in the adapter itself.
+
+- `subagents`
+- `interactive_approval`
+- `browser_automation`
+- `structured_patch`
+- `web_access`
+
+### `runtime.prompt_overrides`
+
+Optional explicit prompt paths:
+
+- `operator`
+- `planner`
+- `generator`
+- `evaluator`
+
+Any configured override path must exist at execution time.
 
 ## Policy Contract
 
@@ -161,6 +200,22 @@ Each gate must define:
 ## Stop Conditions Policy
 
 Must define structured stop conditions with stable IDs.
+
+## Adapter Contract
+
+Each adapter directory should provide:
+
+- `operator.prompt.md`
+- `capabilities.yaml`
+- `bootstrap-notes.md`
+
+The runtime should resolve behavior in this order:
+
+1. `project.yaml.runtime.prompt_overrides`
+2. files under `project.yaml.runtime.adapter_path`
+3. shared role prompts under `harness/roles/`
+
+The runtime should not guess alternate adapter names or paths.
 
 ## Artifact Contract
 

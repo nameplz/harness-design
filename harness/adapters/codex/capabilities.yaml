@@ -1,0 +1,11 @@
+platform: "codex"
+execution_mode: "native-multi-agent"
+capabilities:
+  subagents: true
+  interactive_approval: true
+  browser_automation: true
+  structured_patch: true
+  web_access: true
+prompt_files:
+  operator: "operator.prompt.md"
+bootstrap_notes: "bootstrap-notes.md"

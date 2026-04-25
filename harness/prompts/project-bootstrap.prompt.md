@@ -18,7 +18,7 @@ Read the generic harness templates and transform them into a project-specific ha
 
 ## Output Standard
 
-The resulting harness should be detailed enough that Codex can run planning, implementation, and evaluation loops with minimal human intervention.
+The resulting harness should be detailed enough that the selected CLI adapter can run planning, implementation, and evaluation loops with minimal human intervention.
 
 ## Important Constraints
 
@@ -27,3 +27,8 @@ The resulting harness should be detailed enough that Codex can run planning, imp
 - Prefer explicit criteria over subjective completion language.
 - Keep files readable and editable by humans.
 - Do not introduce implicit paths or policy discovery; record them explicitly in `project.yaml`.
+- Set `runtime.platform` and `runtime.adapter_path` explicitly when targeting a specific CLI.
+- Record only paths that exist at execution time. In this skeleton, the default policy files are the checked-in `harness/policies/*.template.yaml` files.
+- If you copy those policy templates to project-specific file names, update `project.yaml.policy_files` to the new paths in the same change.
+- Do not rely on the operator or runtime to infer alternate file names such as stripping `.template`.
+- Prefer adapter-local prompts and capability declarations over embedding CLI-specific instructions into the shared core files.

@@ -6,6 +6,11 @@ project:
   type: "web-app"
   mode: "sprint"
 
+runtime:
+  platform: "codex"
+  adapter_path: "harness/adapters/codex"
+  execution_mode: "native-multi-agent"
+
 brief:
   summary: |
     Replace this with a short project brief in 1-4 sentences.
@@ -99,10 +104,10 @@ ai_features:
     - "If true, explain what agent or AI behavior should exist in-product"
 
 policy_files:
-  execution: "harness/policies/execution-policy.yaml"
-  qa: "harness/policies/qa-policy.yaml"
-  approval_gates: "harness/policies/approval-gates.yaml"
-  stop_conditions: "harness/policies/stop-conditions.yaml"
+  execution: "harness/policies/execution-policy.template.yaml"
+  qa: "harness/policies/qa-policy.template.yaml"
+  approval_gates: "harness/policies/approval-gates.template.yaml"
+  stop_conditions: "harness/policies/stop-conditions.template.yaml"
 
 approval:
   required_gates:

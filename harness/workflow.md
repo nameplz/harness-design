@@ -15,6 +15,7 @@ Every run starts with:
 These inputs are normalized into `project.yaml` and then used by all agents.
 
 `project.yaml` is the single machine-readable entry point for the run. The operator should not infer active policies, artifact paths, or approval gates from directory contents.
+When runtime metadata is present, the operator should also resolve the active CLI adapter from `project.yaml.runtime` rather than inferring one from the local environment.
 
 ## 2. Agent Roles
 
@@ -28,6 +29,8 @@ Optional roles:
 - Reviewer: focuses on code quality and maintainability
 - Release agent: packages, documents, and prepares handoff
 
+These roles are logical responsibilities, not a requirement for parallel subagents. A CLI with limited delegation support may execute them sequentially while keeping the same artifact contract.
+
 ## 3. Operating Modes
 
 ### Continuous Mode
@@ -38,6 +41,7 @@ Use when the model can hold coherence across the full run.
 - Generator builds against the spec.
 - Evaluator reviews at major checkpoints or at the end.
 - Generator iterates until thresholds pass.
+- This mode works with both `native-multi-agent` and `single-agent-sequenced` execution.
 
 ### Sprint Mode
 
@@ -48,6 +52,7 @@ Use when the project is long-running, risky, or the model benefits from decompos
 - Generator implements only that sprint scope.
 - Evaluator runs QA and either passes or sends back defects.
 - A handoff artifact records the latest state.
+- If the runtime lacks subagent support, the same sprint loop should run sequentially through the operator.
 
 ## 4. File-Based State
 
@@ -70,6 +75,20 @@ Benefits:
 - easier auditability
 - better recovery from interrupted runs
 - cleaner collaboration between agents
+
+## 4a. Adapter Layer
+
+The harness should separate the core run contract from CLI-specific execution behavior.
+
+- Core documents define what must happen.
+- Adapter documents define how a given CLI should carry it out.
+- Missing capabilities should degrade execution mode, not the artifact contract.
+
+Examples:
+
+- no subagents: run planner, generator, and evaluator sequentially
+- no browser automation: use the most direct available QA method and record any unverified checks
+- no structured patch tool: allow a different edit mechanism without changing build handoff requirements
 
 ## 5. Decision Gates
 
